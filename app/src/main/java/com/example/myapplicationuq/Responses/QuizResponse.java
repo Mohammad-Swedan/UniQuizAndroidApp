@@ -2,7 +2,9 @@ package com.example.myapplicationuq.Responses;
 
 import com.google.gson.annotations.SerializedName;
 
-public class QuizResponse {
+import java.io.Serializable;
+
+public class QuizResponse implements Serializable {
 
     @SerializedName("quizID")
     private Integer quizID;

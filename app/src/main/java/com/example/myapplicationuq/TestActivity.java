@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplicationuq.Adapters.QuizAdapter;
 import com.example.myapplicationuq.HttpClients.RetrofitClient;
-import com.example.myapplicationuq.Interfaces.AuthApi;
+import com.example.myapplicationuq.Interfaces.ServerApi;
 import com.example.myapplicationuq.Responses.QuizResponse;
 import com.example.myapplicationuq.Utils.PreferenceManager;
 
@@ -79,10 +79,10 @@ public class TestActivity extends AppCompatActivity implements QuizAdapter.OnIte
 
         // Initialize Retrofit
         Retrofit retrofit = RetrofitClient.getClient(this, "https://uniquiz.runasp.net/");
-        AuthApi authApi = retrofit.create(AuthApi.class);
+        ServerApi serverApi = retrofit.create(ServerApi.class);
 
         // Make API call
-        Call<List<QuizResponse>> call = authApi.getQuizzesByMaterialId(materialId);
+        Call<List<QuizResponse>> call = serverApi.getQuizzesByMaterialId(materialId);
 
         call.enqueue(new Callback<List<QuizResponse>>() {
             @Override

@@ -14,7 +14,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface AuthApi {
+public interface ServerApi {
     @POST("/api/Auth/Login")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
 
@@ -26,6 +26,8 @@ public interface AuthApi {
 
     @GET("api/question/all/{quizID}")
     Call<List<QuestionResponse>> getQuestionsByQuizId(@Path("quizID") int quizId);
+
+
 
     //@POST("/api/Auth/Register")
     //Call<RegisterResponse> register(@Body RegisterRequest registerRequest);
