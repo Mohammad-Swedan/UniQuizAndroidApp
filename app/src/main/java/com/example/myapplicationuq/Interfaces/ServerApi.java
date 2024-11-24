@@ -1,6 +1,7 @@
 package com.example.myapplicationuq.Interfaces;
 
 import com.example.myapplicationuq.Requests.LoginRequest;
+import com.example.myapplicationuq.Requests.RegisterRequest;
 import com.example.myapplicationuq.Responses.LoginResponse;
 import com.example.myapplicationuq.Responses.MaterialResponse;
 import com.example.myapplicationuq.Responses.QuestionResponse;
@@ -24,10 +25,11 @@ public interface ServerApi {
     @GET("api/Quiz/All/{MaterialID}")
     Call<List<QuizResponse>> getQuizzesByMaterialId(@Path("MaterialID") int materialId);
 
-    @GET("api/question/all/{quizID}")
+    @GET("api/Qustion/All/{quizID}")
     Call<List<QuestionResponse>> getQuestionsByQuizId(@Path("quizID") int quizId);
 
-
+    @POST("/api/Auth/Register")
+    Call<Void> register(@Body RegisterRequest registerRequest);
 
     //@POST("/api/Auth/Register")
     //Call<RegisterResponse> register(@Body RegisterRequest registerRequest);

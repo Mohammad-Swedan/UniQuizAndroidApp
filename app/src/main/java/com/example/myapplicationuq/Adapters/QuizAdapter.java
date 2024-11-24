@@ -1,5 +1,6 @@
 package com.example.myapplicationuq.Adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +11,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplicationuq.MainActivity;
-import com.example.myapplicationuq.MaterialsActivity;
+import com.example.myapplicationuq.QuestionActivity;
 import com.example.myapplicationuq.R;
 import com.example.myapplicationuq.Responses.QuizResponse;
-import com.example.myapplicationuq.TestActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,7 +24,6 @@ public class  QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolde
 
     private List<QuizResponse> quizList;
     private OnItemClickListener listener;
-
     // Define interface for click events
     public interface OnItemClickListener {
         void onItemClick(QuizResponse quiz);
@@ -60,6 +58,10 @@ public class  QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolde
             @Override
             public void onClick(View v) {
                 Toast.makeText(v.getContext(), "this is " + quiz.getTitle().toString(),Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(v.getContext(), QuestionActivity.class);
+                intent.putExtra("quiz_name", quiz.getTitle());
+                intent.putExtra("quizID", quiz.getQuizID());
+                v.getContext().startActivity(intent);
             }
         });
 

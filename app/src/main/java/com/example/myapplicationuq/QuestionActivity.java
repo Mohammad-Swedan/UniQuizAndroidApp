@@ -1,5 +1,3 @@
-// package: com.example.myapplicationuq
-
 package com.example.myapplicationuq;
 
 import android.os.Bundle;
@@ -8,21 +6,22 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplicationuq.Adapters.QuestionAdapter;
 import com.example.myapplicationuq.HttpClients.RetrofitClient;
 import com.example.myapplicationuq.Interfaces.ServerApi;
+import com.example.myapplicationuq.Responses.ChoiceResponse;
 import com.example.myapplicationuq.Responses.QuestionResponse;
 import com.example.myapplicationuq.Utils.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,19 +34,12 @@ public class QuestionActivity extends AppCompatActivity {
     private QuestionAdapter adapter;
     private ProgressBar progressBar;
     private PreferenceManager preferenceManager;
+    private List<QuestionResponse> questionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_question);
-
-        // Adjust window insets for edge-to-edge layout
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         // Initialize UI components
         recyclerView = findViewById(R.id.recyclerViewQuestions);
@@ -82,19 +74,31 @@ public class QuestionActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null) {
-                    List<QuestionResponse> questionList = response.body();
-                    adapter = new QuestionAdapter(QuestionActivity.this, questionList);
-                    recyclerView.setAdapter(adapter);
+                    questionList = response.body();
+
+                    if (questionList.isEmpty()) {
+                        Toast.makeText(QuestionActivity.this, "No questions available for this quiz.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        adapter = new QuestionAdapter(QuestionActivity.this, questionList);
+                        adapter.setOnSubmitClickListener(() -> {
+                            // Handle submission
+                            handleSubmit();
+                        });
+                        recyclerView.setAdapter(adapter);
+                    }
                 } else {
-                    String errorMessage = "Failed to fetch questions.";
+                    String errorMessage = "Failed to fetch questions. ";
+                    errorMessage += "Response code: " + response.code();
+
                     try {
                         if (response.errorBody() != null) {
-                            errorMessage = response.errorBody().string();
+                            errorMessage += ", Error body: " + response.errorBody().string();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(QuestionActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(QuestionActivity.this, "Error: " + errorMessage, Toast.LENGTH_LONG).show();
                     Log.e("QuestionActivity", "Error: " + errorMessage);
                 }
             }
@@ -106,5 +110,134 @@ public class QuestionActivity extends AppCompatActivity {
                 Log.e("QuestionActivity", "Throwable: " + t.getMessage());
             }
         });
+    }
+
+    private void handleSubmit() {
+        Map<Integer, Object> userAnswers = adapter.getUserAnswers();
+        boolean allAnswered = true;
+        List<Integer> unansweredQuestions = new ArrayList<>();
+
+        // Check if all questions are answered
+        for (int i = 0; i < questionList.size(); i++) {
+            QuestionResponse question = questionList.get(i);
+            Object answer = userAnswers.get(question.getQuestionID());
+            if (answer == null) {
+                allAnswered = false;
+                unansweredQuestions.add(i + 1); // 1-indexed
+                continue;
+            }
+
+            // Additional checks
+            if (question.getQuestionType() == QuestionAdapter.TYPE_MULTIPLE_CHOICE) {
+                if (answer instanceof Set) {
+                    if (((Set<?>) answer).isEmpty()) {
+                        allAnswered = false;
+                        unansweredQuestions.add(i + 1);
+                    }
+                } else {
+                    allAnswered = false;
+                    unansweredQuestions.add(i + 1);
+                }
+            }
+
+            if (question.getQuestionType() == QuestionAdapter.TYPE_SINGLE_ANSWER) {
+                if (answer instanceof String) {
+                    if (((String) answer).trim().isEmpty()) {
+                        allAnswered = false;
+                        unansweredQuestions.add(i + 1);
+                    }
+                } else {
+                    allAnswered = false;
+                    unansweredQuestions.add(i + 1);
+                }
+            }
+        }
+
+        if (!allAnswered) {
+            // Notify the user about unanswered questions
+            String message;
+            if (unansweredQuestions.size() == 1) {
+                message = "Please answer all questions before submitting.\nUnanswered question: " + unansweredQuestions.get(0);
+            } else {
+                message = "Please answer all questions before submitting.\nUnanswered questions: " + unansweredQuestions;
+            }
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+            // Scroll to the first unanswered question
+            int firstUnansweredPosition = unansweredQuestions.get(0) - 1;
+            recyclerView.scrollToPosition(firstUnansweredPosition);
+
+            return;
+        }
+
+        // Calculate the score
+        int totalQuestions = questionList.size();
+        int correctAnswers = 0;
+        Set<Integer> incorrectQuestionIDs = new HashSet<>();
+
+        for (QuestionResponse question : questionList) {
+            Object userAnswer = userAnswers.get(question.getQuestionID());
+            if (isAnswerCorrect(question, userAnswer)) {
+                correctAnswers++;
+            } else {
+                incorrectQuestionIDs.add(question.getQuestionID());
+            }
+        }
+
+        // Show the result
+        int scorePercentage = (correctAnswers * 100) / totalQuestions;
+        String resultMessage = "You scored " + correctAnswers + " out of " + totalQuestions + " (" + scorePercentage + "%)";
+        Toast.makeText(this, resultMessage, Toast.LENGTH_LONG).show();
+
+        // Highlight incorrect answers
+        adapter.setIncorrectQuestionIDs(incorrectQuestionIDs);
+
+        // Disable further interaction
+        adapter.setSubmitted(true);
+    }
+
+    private boolean isAnswerCorrect(QuestionResponse question, Object userAnswer) {
+        switch (question.getQuestionType()) {
+            case QuestionAdapter.TYPE_SINGLE_CHOICE:
+            case QuestionAdapter.TYPE_TRUE_FALSE:
+                // For single choice and true/false, userAnswer is the choiceID (Integer)
+                if (!(userAnswer instanceof Integer)) return false;
+                int selectedChoiceID = (Integer) userAnswer;
+                for (ChoiceResponse choice : question.getChoices()) {
+                    if (choice.getChoiceID().equals(selectedChoiceID)) {
+                        return choice.getCorrect();
+                    }
+                }
+                break;
+
+            case QuestionAdapter.TYPE_MULTIPLE_CHOICE:
+                // For multiple choice, userAnswer is a Set of choiceIDs
+                if (!(userAnswer instanceof Set)) return false;
+                Set<Integer> selectedChoices = (Set<Integer>) userAnswer;
+                Set<Integer> correctChoices = new HashSet<>();
+                for (ChoiceResponse choice : question.getChoices()) {
+                    if (choice.getCorrect()) {
+                        correctChoices.add(choice.getChoiceID());
+                    }
+                }
+                return selectedChoices.equals(correctChoices);
+
+            case QuestionAdapter.TYPE_SINGLE_ANSWER:
+                // For single answer (text input), compare userAnswer with correct answer
+                if (!(userAnswer instanceof String)) return false;
+                String userInput = ((String) userAnswer).trim().toLowerCase();
+                String correctAnswer = "";
+                for (ChoiceResponse choice : question.getChoices()) {
+                    if (choice.getCorrect()) {
+                        correctAnswer = choice.getChoiceText().trim().toLowerCase();
+                        break;
+                    }
+                }
+                return userInput.equals(correctAnswer);
+
+            default:
+                return false;
+        }
+        return false;
     }
 }
