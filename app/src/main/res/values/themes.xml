@@ -1,9 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.MyApplicationUQ" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.MyApplicationUQ" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/dark_blue</item>
+
+
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="materialButtonStyle">@style/buttonStyle</item>
     </style>
+
+    <!-- res/values/styles.xml -->
+    <style name="QuizTitleText">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="QuizDescriptionText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="MetadataText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="TimestampText">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
 
     <style name="Theme.MyApplicationUQ" parent="Base.Theme.MyApplicationUQ" />
 </resources>

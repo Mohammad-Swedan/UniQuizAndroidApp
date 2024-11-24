@@ -1,7 +1,9 @@
 package com.example.myapplicationuq.Responses;
 
+import java.io.Serializable;
+
 // MaterialResponse.java
-public class MaterialResponse {
+public class MaterialResponse implements Serializable {
     private Integer materialID;
     private String materialName;
     private Integer facultyID;

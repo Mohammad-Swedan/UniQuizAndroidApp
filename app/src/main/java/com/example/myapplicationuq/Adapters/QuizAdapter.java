@@ -1,14 +1,17 @@
 package com.example.myapplicationuq.Adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplicationuq.QuestionActivity;
 import com.example.myapplicationuq.R;
 import com.example.myapplicationuq.Responses.QuizResponse;
 
@@ -17,11 +20,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder> {
+public class  QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder> {
 
     private List<QuizResponse> quizList;
     private OnItemClickListener listener;
-
     // Define interface for click events
     public interface OnItemClickListener {
         void onItemClick(QuizResponse quiz);
@@ -52,8 +54,19 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
         String formattedDate = formatDate(quiz.getCreatedAt());
         holder.textViewCreatedAt.setText("Created At: " + formattedDate);
 
+        holder.takeQuiz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "this is " + quiz.getTitle().toString(),Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(v.getContext(), QuestionActivity.class);
+                intent.putExtra("quiz_name", quiz.getTitle());
+                intent.putExtra("quizID", quiz.getQuizID());
+                v.getContext().startActivity(intent);
+            }
+        });
+
         // Handle item click
-        holder.itemView.setOnClickListener(v -> listener.onItemClick(quiz));
+        //holder.itemView.setOnClickListener(v -> listener.onItemClick(quiz));
     }
 
     @Override
@@ -63,6 +76,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
 
     public static class QuizViewHolder extends RecyclerView.ViewHolder {
         TextView textViewQuizTitle, textViewQuizDescription, textViewLikes, textViewDislikes, textViewCreatedAt;
+        Button takeQuiz;
 
         public QuizViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,6 +85,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
             textViewLikes = itemView.findViewById(R.id.textViewLikes);
             textViewDislikes = itemView.findViewById(R.id.textViewDislikes);
             textViewCreatedAt = itemView.findViewById(R.id.textViewCreatedAt);
+            takeQuiz = itemView.findViewById(R.id.buttonTakeQuiz);
         }
     }
 

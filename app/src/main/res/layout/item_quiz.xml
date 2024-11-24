@@ -1,64 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardViewQuiz"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="4dp"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    android:background="@color/white"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:foreground="?attr/selectableItemBackground"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/light_blue"
+    android:backgroundTint="@color/white">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <!-- Quiz Title -->
         <TextView
             android:id="@+id/textViewQuizTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Quiz Title"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/dark_blue"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Quiz Description -->
         <TextView
             android:id="@+id/textViewQuizDescription"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Quiz Description"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"/>
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/textViewQuizTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Likes and Dislikes -->
         <LinearLayout
+            android:id="@+id/likes_dislikes_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/textViewQuizDescription"
+            app:layout_constraintStart_toStartOf="parent">
 
+            <!-- Likes -->
             <TextView
                 android:id="@+id/textViewLikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Likes: 0"
+                android:text="👍 0"
                 android:textSize="14sp"
-                android:drawablePadding="4dp"/>
+                android:textColor="@color/dark_blue"
+                android:drawablePadding="4dp" />
 
+            <!-- Dislikes -->
             <TextView
                 android:id="@+id/textViewDislikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dislikes: 0"
+                android:text="👎 0"
                 android:textSize="14sp"
-                android:layout_marginStart="16dp"
-                android:drawablePadding="4dp"/>
+                android:textColor="@color/dark_blue"
+                android:drawablePadding="4dp"
+                android:layout_marginStart="24dp" />
         </LinearLayout>
 
         <!-- Created At -->
@@ -68,8 +90,27 @@
             android:layout_height="wrap_content"
             android:text="Created At: Date"
             android:textSize="12sp"
-            android:layout_marginTop="4dp"/>
+            android:textColor="@color/gray"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/likes_dislikes_container"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
+        <!-- "Take Quiz" Button -->
+        <Button
+            android:id="@+id/buttonTakeQuiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Take Quiz"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/dark_blue"
+            android:layout_marginTop="12dp"
+            android:paddingHorizontal="24dp"
+            android:background="@drawable/background_button"
+            android:paddingVertical="8dp"
+            app:cornerRadius="24dp"
+            app:layout_constraintTop_toBottomOf="@id/textViewCreatedAt"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-</androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

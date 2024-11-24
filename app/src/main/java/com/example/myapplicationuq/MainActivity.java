@@ -4,18 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplicationuq.HttpClients.RetrofitClient;
-import com.example.myapplicationuq.Interfaces.AuthApi;
+import com.example.myapplicationuq.Interfaces.ServerApi;
 import com.example.myapplicationuq.Requests.LoginRequest;
 import com.example.myapplicationuq.Responses.LoginResponse;
 import com.example.myapplicationuq.Utils.PreferenceManager;
@@ -30,13 +33,14 @@ import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity {
 
     private PreferenceManager preferenceManager;
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        super.setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -45,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar2);
         progressBar.setVisibility(View.GONE);
         preferenceManager = new PreferenceManager(this);
+
+        TextView noAccountLabel = findViewById(R.id.createNewAccountLabel);
+        noAccountLabel.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
     }
 
     /*public void openTest(View t)
@@ -54,27 +64,29 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }*/
 
-    public void login(View v)
-    {
-
+    public void login(View v) {
         progressBar.setVisibility(View.VISIBLE);
 
-        String emailOrUsername = ((EditText)findViewById(R.id.editTextUsernameEmailorusername)).getText().toString();
-        String password = ((EditText)findViewById(R.id.editTextPassword)).getText().toString();
+        String emailOrUsername = ((EditText)findViewById(R.id.editTextUsernameEmailorusername)).getText().toString().trim();
+        String password = ((EditText)findViewById(R.id.editTextPassword)).getText().toString().trim();
+
+        // Validate input
+        if (emailOrUsername.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please enter both email/username and password.", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
 
         // Initialize Retrofit
         Retrofit retrofit = RetrofitClient.getClient(this,"https://uniquiz.runasp.net/");
-        AuthApi authApi = retrofit.create(AuthApi.class);
-
-        //validate input first
+        ServerApi serverApi = retrofit.create(ServerApi.class);
 
         // Create login request object
         LoginRequest loginRequest = new LoginRequest(emailOrUsername, emailOrUsername, password);
 
         // Make API call
-        Call<LoginResponse> call = authApi.login(loginRequest);
+        Call<LoginResponse> call = serverApi.login(loginRequest);
 
-        //when i rech this code the programm teminate (stop) directly after the following function
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -88,8 +100,6 @@ public class MainActivity extends AppCompatActivity {
 
                     preferenceManager.saveToken(token);
                     preferenceManager.savePermissions(permissions);
-                    // Save token and permissions securely
-                    //saveLoginData(token, permissions); // Ensure this method is correctly implemented
 
                     Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 
@@ -98,8 +108,16 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 } else {
                     // Handle error response
-                    Toast.makeText(MainActivity.this, "Login Failed: " + response.message(), Toast.LENGTH_SHORT).show();
-                    Log.e("MainActivity", "Error: " + response.errorBody());
+                    String errorMessage = "Login Failed.";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMessage = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    Log.e("MainActivity", "Error: " + errorMessage);
                 }
             }
 
@@ -111,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("MainActivity", "Throwable: " + t.getMessage());
             }
         });
-
     }
+
 
 
 }

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplicationuq.Adapters.QuizAdapter;
 import com.example.myapplicationuq.HttpClients.RetrofitClient;
-import com.example.myapplicationuq.Interfaces.AuthApi;
+import com.example.myapplicationuq.Interfaces.ServerApi;
 import com.example.myapplicationuq.Responses.QuizResponse;
 import com.example.myapplicationuq.Utils.PreferenceManager;
 
@@ -25,7 +25,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class TestActivity extends AppCompatActivity implements QuizAdapter.OnItemClickListener {
+public class QuizActivity extends AppCompatActivity implements QuizAdapter.OnItemClickListener {
 
     private TextView textViewMaterialName;
     private TextView textViewNoQuizzes; // TextView to display "No quiz added yet"
@@ -79,10 +79,10 @@ public class TestActivity extends AppCompatActivity implements QuizAdapter.OnIte
 
         // Initialize Retrofit
         Retrofit retrofit = RetrofitClient.getClient(this, "https://uniquiz.runasp.net/");
-        AuthApi authApi = retrofit.create(AuthApi.class);
+        ServerApi serverApi = retrofit.create(ServerApi.class);
 
         // Make API call
-        Call<List<QuizResponse>> call = authApi.getQuizzesByMaterialId(materialId);
+        Call<List<QuizResponse>> call = serverApi.getQuizzesByMaterialId(materialId);
 
         call.enqueue(new Callback<List<QuizResponse>>() {
             @Override
@@ -110,7 +110,7 @@ public class TestActivity extends AppCompatActivity implements QuizAdapter.OnIte
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(TestActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QuizActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
                     Log.e("TestActivity", "Error: " + errorMessage);
                 }
             }
@@ -119,7 +119,7 @@ public class TestActivity extends AppCompatActivity implements QuizAdapter.OnIte
             public void onFailure(Call<List<QuizResponse>> call, Throwable t) {
                 // Hide ProgressBar
                 progressBarQuizzes.setVisibility(View.GONE);
-                Toast.makeText(TestActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(QuizActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("TestActivity", "Throwable: " + t.getMessage());
             }
         });

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplicationuq.R;
 import com.example.myapplicationuq.Responses.MaterialResponse;
-import com.example.myapplicationuq.TestActivity;
+import com.example.myapplicationuq.QuizActivity;
 
 import java.util.List;
 // MaterialsAdapter.java
@@ -35,11 +36,12 @@ public class MaterialsAdapter extends RecyclerView.Adapter<MaterialsAdapter.Mate
     public void onBindViewHolder(@NonNull MaterialViewHolder holder, int position) {
         MaterialResponse material = materialList.get(position);
         holder.textViewMaterialName.setText(material.getMaterialName());
-        holder.textViewFacultyID.setText("Faculty ID: " + material.getFacultyID());
+        //holder.textViewFacultyID.setText("Faculty ID: " + material.getFacultyID());
+        holder.textViewFacultyID.setText("Faculty : " + "Information Technology");
 
         // Set click listener on the itemView
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), TestActivity.class);
+        holder.viewQuizzes.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), QuizActivity.class);
             intent.putExtra("material_name", material.getMaterialName());
             intent.putExtra("material_id", material.getMaterialID()); // Pass Material ID
             v.getContext().startActivity(intent);
@@ -53,11 +55,12 @@ public class MaterialsAdapter extends RecyclerView.Adapter<MaterialsAdapter.Mate
 
     public static class MaterialViewHolder extends RecyclerView.ViewHolder {
         TextView textViewMaterialName, textViewFacultyID;
-
+        Button viewQuizzes;
         public MaterialViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewMaterialName = itemView.findViewById(R.id.textViewMaterialName);
             textViewFacultyID = itemView.findViewById(R.id.textViewFacultyID);
+            viewQuizzes = itemView.findViewById(R.id.buttonViewDetails);
         }
     }
 
