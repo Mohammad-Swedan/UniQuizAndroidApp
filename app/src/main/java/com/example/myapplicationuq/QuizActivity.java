@@ -128,7 +128,6 @@ public class QuizActivity extends AppCompatActivity implements QuizAdapter.OnIte
     @Override
     public void onItemClick(QuizResponse quiz) {
         // Handle quiz item click
-        Toast.makeText(this, "Selected Quiz: " + quiz.getTitle(), Toast.LENGTH_SHORT).show();
         // Navigate to quiz details or start quiz activity
     }
 }

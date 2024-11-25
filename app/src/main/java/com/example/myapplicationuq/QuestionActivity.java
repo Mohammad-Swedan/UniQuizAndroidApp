@@ -161,12 +161,6 @@ public class QuestionActivity extends AppCompatActivity {
             } else {
                 message = "Please answer all questions before submitting.\nUnanswered questions: " + unansweredQuestions;
             }
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
-            // Scroll to the first unanswered question
-            int firstUnansweredPosition = unansweredQuestions.get(0) - 1;
-            recyclerView.scrollToPosition(firstUnansweredPosition);
-
             return;
         }
 
@@ -184,10 +178,8 @@ public class QuestionActivity extends AppCompatActivity {
             }
         }
 
-        // Show the result
         int scorePercentage = (correctAnswers * 100) / totalQuestions;
         String resultMessage = "You scored " + correctAnswers + " out of " + totalQuestions + " (" + scorePercentage + "%)";
-        Toast.makeText(this, resultMessage, Toast.LENGTH_LONG).show();
 
         // Highlight incorrect answers
         adapter.setIncorrectQuestionIDs(incorrectQuestionIDs);

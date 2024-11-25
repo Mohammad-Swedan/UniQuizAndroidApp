@@ -32,8 +32,6 @@ import java.util.Set;
 public class QuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int TYPE_SINGLE_CHOICE = 1;
-    public static final int TYPE_TRUE_FALSE = 2;
-    public static final int TYPE_MULTIPLE_CHOICE = 3;
     public static final int TYPE_SINGLE_ANSWER = 4;
 
     private static final int VIEW_TYPE_SUBMIT_BUTTON = 5;
