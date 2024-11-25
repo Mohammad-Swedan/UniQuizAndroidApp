@@ -46,7 +46,6 @@
             android:imeOptions="actionNext"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="15dp"
-            android:textColorHint="@color/hint"
             />
 
         <EditText
@@ -61,7 +60,6 @@
             android:inputType="textPersonName"
             android:imeOptions="actionNext"
             android:layout_marginBottom="15dp"
-            android:textColorHint="@color/hint"
             />
 
         <EditText
@@ -76,7 +74,6 @@
             android:inputType="textEmailAddress"
             android:imeOptions="actionNext"
             android:layout_marginBottom="15dp"
-            android:textColorHint="@color/hint"
             />
 
         <EditText
@@ -91,7 +88,6 @@
             android:inputType="textPassword"
             android:imeOptions="actionNext"
             android:layout_marginBottom="15dp"
-            android:textColorHint="@color/hint"
             />
 
         <EditText
@@ -106,7 +102,6 @@
             android:inputType="textPassword"
             android:imeOptions="actionDone"
             android:layout_marginBottom="15dp"
-            android:textColorHint="@color/hint"
             />
 
         <Button
@@ -117,8 +112,6 @@
             android:backgroundTint="@color/dark_blue"
             android:padding="10dp"
             android:background="@drawable/background_button"
-            android:text="Sign up"
-            android:textSize="16sp"
             android:textColor="@color/white"
             style="@style/buttonStyle"
             />
